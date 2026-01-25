@@ -1,0 +1,17 @@
+# --- FRONTEND (Next.js & Node) ---
+frontend/node_modules/
+frontend/.next/
+frontend/.env
+frontend/.env.local
+frontend/out/
+frontend/build/
+.DS_Store
+
+# --- BACKEND (Java & Spring Boot) ---
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.properties
+backend/**/*.class
+backend/.idea/
+backend/*.iml
+backend/.vscode/
+backend/help.md
