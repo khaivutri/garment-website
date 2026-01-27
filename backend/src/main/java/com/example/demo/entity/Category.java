@@ -1,7 +1,7 @@
-package com.example.demo.entity; // Sửa lại theo package thực tế của bạn
+package com.example.demo.entity; 
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity; // Nếu bạn chưa cài Lombok thì dùng Getter/Setter thường
+import jakarta.persistence.Entity; 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Data // Annotation của Lombok giúp tự sinh Getter/Setter
+@Data 
 @Table(name = "categories") // Đặt tên bảng trong DB là số nhiều
 public class Category {
 

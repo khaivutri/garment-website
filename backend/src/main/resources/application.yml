@@ -1,6 +1,5 @@
 spring:
   datasource:
-    # Gọi giá trị từ biến môi trường (Environment Variables)
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
@@ -15,7 +14,6 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
-# Cấu hình JWT (Ví dụ cách dùng biến môi trường cho Secret Key luôn)
 jwt:
   secret: ${JWT_SECRET:MacDinhLaMotChuoiRatDaiNeuKhongTimThayBienMoiTruong}
   expiration: 86400000
