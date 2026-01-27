@@ -28,11 +28,10 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String material; // Chất liệu
+    private String material; 
 
-    private Double price; // Giá (nếu cần)
+    private Double price; 
 
-    // Quan hệ: Nhiều sản phẩm thuộc 1 Danh mục
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false) 
     private Category category;

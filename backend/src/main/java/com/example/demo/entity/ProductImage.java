@@ -3,7 +3,7 @@ package com.example.demo.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity; // Import cái này để tránh lỗi vòng lặp
+import jakarta.persistence.Entity; 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,12 +21,12 @@ public class ProductImage {
     private Long id;
 
     @Column(nullable = false)
-    private String imageUrl; // Link ảnh (ví dụ: https://cloudinary...)
+    private String imageUrl; 
 
-    private boolean isThumbnail; // Đánh dấu ảnh này là ảnh đại diện hay không
+    private boolean isThumbnail; 
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    @JsonIgnore // Quan trọng: Khi trả về JSON, đừng lôi ngược lại Product nữa kẻo bị lặp vô tận
+    @JsonIgnore 
     private Product product;
 }
