@@ -21,7 +21,7 @@ public class CategoryController {
     public List<Category> getAllCategories() {
         return categoryRepo.findAll();
     }
-
+    
     // API: Thêm danh mục mới (Dùng để test)
     // POST http://localhost:8080/api/categories
     @PostMapping

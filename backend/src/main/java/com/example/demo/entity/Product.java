@@ -37,7 +37,6 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false) 
     private Category category;
 
-    // Quan hệ: 1 Sản phẩm có nhiều Ảnh
     // cascade = CascadeType.ALL nghĩa là: Xóa sản phẩm thì xóa luôn ảnh của nó
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductImage> images;
