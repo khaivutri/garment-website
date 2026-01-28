@@ -20,6 +20,6 @@ public class Category {
     @Column(nullable = false) // Không được để trống
     private String name;
 
-    @Column(columnDefinition = "TEXT") // Cho phép nhập văn bản dài
+    @Column(columnDefinition = "TEXT") 
     private String description;
 }
