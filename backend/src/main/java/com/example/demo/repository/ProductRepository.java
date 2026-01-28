@@ -7,7 +7,6 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    
     // Tìm sản phẩm theo ID danh mục
     // Spring Boot tự động dịch tên hàm này thành câu SQL: SELECT * FROM products WHERE category_id = ?
     List<Product> findByCategoryId(Long categoryId);
