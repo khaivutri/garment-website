@@ -1,0 +1,8 @@
+# --- DATABASE CONFIG (AIVEN) ---
+SPRING_DATASOURCE_URL=jdbc:mysql://[host]:[port]/[db_name]
+SPRING_DATASOURCE_USERNA_ME=your_username
+SPRING_DATASOURCE_PASSWO_RD=your_password
+
+# --- JWT CONFIG ---
+app.jwt.secret=your_super_secret_key_here
+app.jwt.expiration=604800000
