@@ -8,10 +8,11 @@ import com.example.backend.repository.CategoryRepository;
 import com.example.backend.service.ProductService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,10 +30,11 @@ public class ProductServiceImpl implements ProductService {
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setMaterial(dto.getMaterial());
+        product.setPrice(dto.getPrice());
 
-        // Tìm Category từ database và gán vào sản phẩm
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Category not found with ID: " + dto.getCategoryId()));
         product.setCategory(category);
 
         Product savedProduct = productRepository.save(product);
@@ -48,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
             dto.setName(product.getName());
             dto.setDescription(product.getDescription());
             dto.setMaterial(product.getMaterial());
+            dto.setPrice(product.getPrice());
             dto.setCategoryId(product.getCategory().getId());
             return dto;
         }).collect(Collectors.toList());
@@ -55,51 +58,46 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO getProductById(Long id) {
-        // BƯỚC 1: Tìm kiếm sản phẩm trong DB bằng ID
-        Product product = productRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Product not found with ID: " + id));
 
-        // BƯỚC 2: Chuyển đổi (Mapping) từ Entity sang DTO để trả về cho Client
         ProductDTO dto = new ProductDTO();
         dto.setId(product.getId());
         dto.setName(product.getName());
         dto.setDescription(product.getDescription());
         dto.setMaterial(product.getMaterial());
+        dto.setPrice(product.getPrice());
         dto.setCategoryId(product.getCategory().getId());
-        // Lấy danh sách URL ảnh từ danh sách ProductImage (nếu có)
-        if ( product.getImages() != null){
+
+        if (product.getImages() != null) {
             dto.setImageUrls(product.getImages().stream()
                     .map(img -> img.getImageUrl())
-                    .collect(Collectors.toList())
-                    );
+                    .collect(Collectors.toList()));
         }
         return dto;
-
     }
 
     @Override
-    @Transactional // Đảm bảo tính toàn vẹn dữ liệu khi cập nhật nhiều bảng
+    @Transactional
     public ProductDTO updateProduct(Long id, ProductDTO dto) {
-        // BƯỚC 1: Kiểm tra sản phẩm có tồn tại hay không trước khi sửa
         Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found, can't be update"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Product not found with ID: " + id));
 
-        // BƯỚC 2: Cập nhật các thông tin cơ bản
         existingProduct.setName(dto.getName());
         existingProduct.setDescription(dto.getDescription());
         existingProduct.setMaterial(dto.getMaterial());
+        existingProduct.setPrice(dto.getPrice());
 
-        // BƯỚC 3: Xử lý thay đổi Category (nếu Category ID truyền vào khác ID hiện tại)
-        if (! existingProduct.getCategory().getId().equals(dto.getCategoryId())){
+        if (!existingProduct.getCategory().getId().equals(dto.getCategoryId())) {
             Category newCategory = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("New category not found"));
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "Category not found with ID: " + dto.getCategoryId()));
             existingProduct.setCategory(newCategory);
         }
 
-        // BƯỚC 4: Lưu vào Database (Hibernate sẽ tự hiểu đây là lệnh UPDATE)
         Product savedProduct = productRepository.save(existingProduct);
-
-        // BƯỚC 5: Trả về DTO sau khi cập nhật thành công
         dto.setId(savedProduct.getId());
         return dto;
     }
@@ -107,16 +105,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void deleteProduct(Long id) {
-        // BƯỚC 1: Kiểm tra sự tồn tại của sản phẩm
         if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Product can't be deleted, which has ID:" + id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found with ID: " + id);
         }
 
-        // BƯỚC 2: Thực hiện xóa (Hard delete theo yêu cầu Sprint 1)
-        // Lưu ý: Nếu có ảnh liên quan, JPA với CascadeType.ALL sẽ tự xóa ảnh trong DB
         productRepository.deleteById(id);
-
-        // BƯỚC 3: Log thông báo hoặc xử lý logic sau khi xóa (nếu cần)
     }
-
 }

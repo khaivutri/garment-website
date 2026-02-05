@@ -1,7 +1,13 @@
 # --- DATABASE CONFIG (AIVEN) ---
-SPRING_DATASOURCE_URL=jdbc:mysql://[host]:[port]/[db_name]
-SPRING_DATASOURCE_USERNA_ME=your_username
-SPRING_DATASOURCE_PASSWO_RD=your_password
+spring.datasource.url=jdbc:mysql://[host]:[port]/[db_name]?useSSL=true&requireSSL=true
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# --- JPA/HIBERNATE CONFIG ---
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
 # --- JWT CONFIG ---
 app.jwt.secret=your_super_secret_key_here

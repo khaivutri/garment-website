@@ -4,6 +4,8 @@ import com.example.backend.model.Category;
 import com.example.backend.model.ProductImage;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -24,8 +26,11 @@ public class Product {
 
     private String material;
 
+    @Column(precision = 12, scale = 2)
+    private BigDecimal price;
+
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

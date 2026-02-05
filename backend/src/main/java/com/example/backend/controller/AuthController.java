@@ -5,6 +5,8 @@ import com.example.backend.dto.AuthResponse;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.security.JwtTokenProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -42,40 +46,19 @@ public class AuthController {
             return ResponseEntity.ok(new AuthResponse(jwt, "Bearer"));
 
         } catch (BadCredentialsException e) {
+            logger.warn("Failed login attempt for user: {}", loginRequest.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid username or password");
         } catch (AuthenticationException e) {
+            logger.error("Authentication error for user {}: {}", loginRequest.getUsername(), e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Authentication failed: " + e.getMessage());
+                    .body("Authentication failed. Please try again.");
         } catch (Exception e) {
+            logger.error("Unexpected error during authentication: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
+                    .body("An unexpected error occurred. Please try again later.");
         }
     }
 
-//    // Endpoint để tạo user mới (CHỈ DÙNG CHO DEVELOPMENT HELPER để test, sửa sau ở spring tiếp theo!!)
-//    @PostMapping("/register")
-//    public ResponseEntity<?> registerUser(@RequestBody LoginRequest request) {
-//        try {
-//            if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-//                return ResponseEntity.badRequest().body("User already exists!");
-//            }
-//
-//            User user = new User();
-//            user.setUsername(request.getUsername());
-//            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-//            user.setRole("ADMIN");
-//
-//            userRepository.save(user);
-//            return ResponseEntity.ok("User created successfully!");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Error: " + e.getMessage());
-//        }
-//    }
 
-    @GetMapping("/test")
-    public String test() {
-        return "Auth API is working!";
-    }
 }
