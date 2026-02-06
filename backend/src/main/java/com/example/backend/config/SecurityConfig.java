@@ -19,9 +19,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,12 +37,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // Public authentication endpoints
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll() // Public: View products
-                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasAuthority("ADMIN") 
-                                                                                                    
-                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAuthority("ADMIN") 
-                                                                                                   
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAuthority("ADMIN") 
-                                                                                                      
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAuthority("ADMIN")
+
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated());
 
@@ -51,12 +56,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allowed origins - update these for production
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000", // React dev server
-                "http://localhost:5173", // Vite dev server
-                "http://localhost:8080" // Same origin
-        ));
+        // Allowed origins - configured via application.properties
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
 
         // Allowed HTTP methods
         configuration.setAllowedMethods(Arrays.asList(
