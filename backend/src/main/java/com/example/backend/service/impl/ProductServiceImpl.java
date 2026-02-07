@@ -1,6 +1,7 @@
 package com.example.backend.service.impl;
 
 import com.example.backend.dto.ProductDTO;
+import com.example.backend.dto.ProductResponseDTO;
 import com.example.backend.model.Product;
 import com.example.backend.model.Category;
 import com.example.backend.repository.ProductRepository;
@@ -25,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
     private CategoryRepository categoryRepository;
 
     @Override
-    public ProductDTO createProduct(ProductDTO dto) {
+    public ProductResponseDTO createProduct(ProductDTO dto) {
         Product product = new Product();
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
@@ -38,49 +39,27 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
 
         Product savedProduct = productRepository.save(product);
-        dto.setId(savedProduct.getId());
-        return dto;
+        return convertToResponseDTO(savedProduct);
     }
 
     @Override
-    public List<ProductDTO> getAllProducts() {
-        return productRepository.findAll().stream().map(product -> {
-            ProductDTO dto = new ProductDTO();
-            dto.setId(product.getId());
-            dto.setName(product.getName());
-            dto.setDescription(product.getDescription());
-            dto.setMaterial(product.getMaterial());
-            dto.setPrice(product.getPrice());
-            dto.setCategoryId(product.getCategory().getId());
-            return dto;
-        }).collect(Collectors.toList());
+    public List<ProductResponseDTO> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public ProductDTO getProductById(Long id) {
+    public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Product not found with ID: " + id));
-
-        ProductDTO dto = new ProductDTO();
-        dto.setId(product.getId());
-        dto.setName(product.getName());
-        dto.setDescription(product.getDescription());
-        dto.setMaterial(product.getMaterial());
-        dto.setPrice(product.getPrice());
-        dto.setCategoryId(product.getCategory().getId());
-
-        if (product.getImages() != null) {
-            dto.setImageUrls(product.getImages().stream()
-                    .map(img -> img.getImageUrl())
-                    .collect(Collectors.toList()));
-        }
-        return dto;
+        return convertToResponseDTO(product);
     }
 
     @Override
     @Transactional
-    public ProductDTO updateProduct(Long id, ProductDTO dto) {
+    public ProductResponseDTO updateProduct(Long id, ProductDTO dto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Product not found with ID: " + id));
@@ -98,8 +77,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product savedProduct = productRepository.save(existingProduct);
-        dto.setId(savedProduct.getId());
-        return dto;
+        return convertToResponseDTO(savedProduct);
     }
 
     @Override
@@ -109,7 +87,23 @@ public class ProductServiceImpl implements ProductService {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Product not found with ID: " + id);
         }
-
         productRepository.deleteById(id);
+    }
+
+    private ProductResponseDTO convertToResponseDTO(Product product) {
+        return ProductResponseDTO.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .material(product.getMaterial())
+                .price(product.getPrice())
+                .categoryId(product.getCategory().getId())
+                .categoryName(product.getCategory().getName())
+                .imageUrls(product.getImages() != null
+                        ? product.getImages().stream()
+                                .map(img -> img.getImageUrl())
+                                .collect(Collectors.toList())
+                        : null)
+                .build();
     }
 }

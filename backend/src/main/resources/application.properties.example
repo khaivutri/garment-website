@@ -11,4 +11,14 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
 # --- JWT CONFIG ---
 app.jwt.secret=your_super_secret_key_here
-app.jwt.expiration=604800000
+app.jwt.expiration=900000
+app.jwt.refresh-expiration=604800000
+
+# --- COOKIE CONFIG ---
+# Set to false for development (HTTP), true for production (HTTPS)
+app.cookie.secure=true
+# SameSite: Strict (recommended), Lax, or None
+app.cookie.same-site=Strict
+
+# --- CORS CONFIG ---
+app.cors.allowed-origins=http://localhost:3000
