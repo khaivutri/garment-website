@@ -1,0 +1,24 @@
+# --- DATABASE CONFIG (AIVEN) ---
+spring.datasource.url=jdbc:mysql://[host]:[port]/[db_name]?useSSL=true&requireSSL=true
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# --- JPA/HIBERNATE CONFIG ---
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# --- JWT CONFIG ---
+app.jwt.secret=your_super_secret_key_here
+app.jwt.expiration=900000
+app.jwt.refresh-expiration=604800000
+
+# --- COOKIE CONFIG ---
+# Set to false for development (HTTP), true for production (HTTPS)
+app.cookie.secure=true
+# SameSite: Strict (recommended), Lax, or None
+app.cookie.same-site=Strict
+
+# --- CORS CONFIG ---
+app.cors.allowed-origins=http://localhost:3000
