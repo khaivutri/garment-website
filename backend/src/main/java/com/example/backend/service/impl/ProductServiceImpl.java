@@ -2,10 +2,12 @@ package com.example.backend.service.impl;
 
 import com.example.backend.dto.ProductDTO;
 import com.example.backend.dto.ProductResponseDTO;
-import com.example.backend.model.Product;
 import com.example.backend.model.Category;
-import com.example.backend.repository.ProductRepository;
+import com.example.backend.model.Product;
+import com.example.backend.model.ProductImage;
 import com.example.backend.repository.CategoryRepository;
+import com.example.backend.repository.ProductImageRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.service.ProductService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +28,11 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ProductImageRepository productImageRepository;
+
     @Override
+    @Transactional
     public ProductResponseDTO createProduct(ProductDTO dto) {
         Product product = new Product();
         product.setName(dto.getName());
@@ -39,7 +46,21 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
 
         Product savedProduct = productRepository.save(product);
-        return convertToResponseDTO(savedProduct);
+
+        // Save image URLs
+        if (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty()) {
+            boolean isFirst = true;
+            for (String url : dto.getImageUrls()) {
+                ProductImage img = new ProductImage();
+                img.setImageUrl(url);
+                img.setThumbnail(isFirst);
+                img.setProduct(savedProduct);
+                productImageRepository.save(img);
+                isFirst = false;
+            }
+        }
+
+        return convertToResponseDTO(productRepository.findById(savedProduct.getId()).orElse(savedProduct));
     }
 
     @Override
@@ -76,8 +97,22 @@ public class ProductServiceImpl implements ProductService {
             existingProduct.setCategory(newCategory);
         }
 
-        Product savedProduct = productRepository.save(existingProduct);
-        return convertToResponseDTO(savedProduct);
+        // Replace image URLs
+        productImageRepository.deleteByProductId(id);
+        if (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty()) {
+            boolean isFirst = true;
+            for (String url : dto.getImageUrls()) {
+                ProductImage img = new ProductImage();
+                img.setImageUrl(url);
+                img.setThumbnail(isFirst);
+                img.setProduct(existingProduct);
+                productImageRepository.save(img);
+                isFirst = false;
+            }
+        }
+
+        productRepository.save(existingProduct);
+        return convertToResponseDTO(productRepository.findById(id).orElse(existingProduct));
     }
 
     @Override
@@ -87,10 +122,17 @@ public class ProductServiceImpl implements ProductService {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Product not found with ID: " + id);
         }
+        productImageRepository.deleteByProductId(id);
         productRepository.deleteById(id);
     }
 
     private ProductResponseDTO convertToResponseDTO(Product product) {
+        List<String> imageUrls = (product.getImages() != null)
+                ? product.getImages().stream()
+                        .map(ProductImage::getImageUrl)
+                        .collect(Collectors.toList())
+                : Collections.emptyList();
+
         return ProductResponseDTO.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -99,11 +141,7 @@ public class ProductServiceImpl implements ProductService {
                 .price(product.getPrice())
                 .categoryId(product.getCategory().getId())
                 .categoryName(product.getCategory().getName())
-                .imageUrls(product.getImages() != null
-                        ? product.getImages().stream()
-                                .map(img -> img.getImageUrl())
-                                .collect(Collectors.toList())
-                        : null)
+                .imageUrls(imageUrls)
                 .build();
     }
 }

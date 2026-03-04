@@ -16,22 +16,13 @@ public class CookieUtil {
     private String sameSite;
 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    public static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 
-    /**
-     * Tạo HTTP-only cookie cho refresh token
-     * Cookie được cấu hình với các thuộc tính bảo mật:
-     * - HttpOnly: Ngăn JavaScript truy cập cookie (chống XSS)
-     * - Secure: Chỉ gửi qua HTTPS (trong production)
-     * - SameSite: Ngăn CSRF attack
-     * - Path: Giới hạn cookie chỉ gửi đến /api/auth
-     */
+    // ============================================================
+    // REFRESH TOKEN COOKIE (HTTP-only, path /api/auth)
+    // ============================================================
+
     public void createRefreshTokenCookie(HttpServletResponse response, String refreshToken, long maxAgeSeconds) {
-        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(secureCookie);
-        cookie.setPath("/api/auth"); 
-        cookie.setMaxAge((int) maxAgeSeconds);
-
         String cookieHeader = String.format("%s=%s; Max-Age=%d; Path=%s; HttpOnly%s; SameSite=%s",
                 REFRESH_TOKEN_COOKIE_NAME,
                 refreshToken,
@@ -39,31 +30,63 @@ public class CookieUtil {
                 "/api/auth",
                 secureCookie ? "; Secure" : "",
                 sameSite);
-
         response.addHeader("Set-Cookie", cookieHeader);
     }
 
-    /**
-     * Xóa refresh token cookie (khi logout)
-     */
     public void deleteRefreshTokenCookie(HttpServletResponse response) {
         String cookieHeader = String.format("%s=; Max-Age=0; Path=%s; HttpOnly%s; SameSite=%s",
                 REFRESH_TOKEN_COOKIE_NAME,
                 "/api/auth",
                 secureCookie ? "; Secure" : "",
                 sameSite);
-
         response.addHeader("Set-Cookie", cookieHeader);
     }
 
-    /**
-     * Lấy refresh token từ cookie trong request
-     */
     public String getRefreshTokenFromCookie(HttpServletRequest request) {
+        return getCookieValue(request, REFRESH_TOKEN_COOKIE_NAME);
+    }
+
+    // ============================================================
+    // ACCESS TOKEN COOKIE (HTTP-only, path /)
+    // ============================================================
+
+    /**
+     * Tạo HTTP-only cookie cho access token.
+     * Path=/ để tự động gửi kèm mọi API request.
+     */
+    public void createAccessTokenCookie(HttpServletResponse response, String accessToken, long maxAgeSeconds) {
+        String cookieHeader = String.format("%s=%s; Max-Age=%d; Path=%s; HttpOnly%s; SameSite=%s",
+                ACCESS_TOKEN_COOKIE_NAME,
+                accessToken,
+                maxAgeSeconds,
+                "/",
+                secureCookie ? "; Secure" : "",
+                sameSite);
+        response.addHeader("Set-Cookie", cookieHeader);
+    }
+
+    public void deleteAccessTokenCookie(HttpServletResponse response) {
+        String cookieHeader = String.format("%s=; Max-Age=0; Path=%s; HttpOnly%s; SameSite=%s",
+                ACCESS_TOKEN_COOKIE_NAME,
+                "/",
+                secureCookie ? "; Secure" : "",
+                sameSite);
+        response.addHeader("Set-Cookie", cookieHeader);
+    }
+
+    public String getAccessTokenFromCookie(HttpServletRequest request) {
+        return getCookieValue(request, ACCESS_TOKEN_COOKIE_NAME);
+    }
+
+    // ============================================================
+    // Helper
+    // ============================================================
+
+    private String getCookieValue(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (REFRESH_TOKEN_COOKIE_NAME.equals(cookie.getName())) {
+                if (name.equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
