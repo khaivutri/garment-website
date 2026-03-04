@@ -1,8 +1,9 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.LoginRequest;
-import com.example.backend.dto.AuthResponse;
 import com.example.backend.model.RefreshToken;
+import com.example.backend.model.User;
+import com.example.backend.repository.UserRepository;
 import com.example.backend.security.JwtTokenProvider;
 import com.example.backend.service.RefreshTokenService;
 import com.example.backend.util.CookieUtil;
@@ -11,12 +12,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -40,10 +44,16 @@ public class AuthController {
     @Autowired
     private CookieUtil cookieUtil;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Value("${app.jwt.expiration:900000}")
+    private long jwtExpiration;
+
     /**
      * Login endpoint
-     * - Trả về access token trong response body
-     * - Đặt refresh token trong HTTP-only cookie
+     * - Đặt access token VÀ refresh token vào HTTP-only cookies
+     * - Không trả về token trong body (bảo mật hơn)
      */
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(
@@ -57,21 +67,26 @@ public class AuthController {
 
             String username = authentication.getName();
 
-            // Tạo access token
+            // Tạo access token → lưu vào HTTP-only cookie
             String accessToken = tokenProvider.generateToken(username);
+            long accessMaxAge = jwtExpiration / 1000;
+            cookieUtil.createAccessTokenCookie(response, accessToken, accessMaxAge);
 
-            // Tạo refresh token và lưu vào database
+            // Tạo refresh token → lưu vào HTTP-only cookie
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
+            long refreshMaxAge = refreshTokenService.getRefreshTokenExpiration() / 1000;
+            cookieUtil.createRefreshTokenCookie(response, refreshToken.getToken(), refreshMaxAge);
 
-            // Đặt refresh token vào HTTP-only cookie
-            long maxAgeSeconds = refreshTokenService.getRefreshTokenExpiration() / 1000;
-            cookieUtil.createRefreshTokenCookie(response, refreshToken.getToken(), maxAgeSeconds);
+            // Lấy role từ DB để trả về cho frontend
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
             logger.debug("User logged in successfully");
-            return ResponseEntity.ok(new AuthResponse(accessToken, "Bearer"));
+            return ResponseEntity.ok(Map.of(
+                    "username", username,
+                    "role", user.getRole()));
 
         } catch (Exception e) {
-
             logger.debug("Authentication failed");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Authentication failed. Please check your credentials."));
@@ -79,17 +94,33 @@ public class AuthController {
     }
 
     /**
+     * Me endpoint – trả về thông tin user hiện tại (đọc từ SecurityContext).
+     * Frontend gọi sau khi load trang để khôi phục session.
+     */
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Not authenticated"));
+        }
+        String username = userDetails.getUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(Map.of(
+                "username", username,
+                "role", user.getRole()));
+    }
+
+    /**
      * Refresh endpoint
      * - Đọc refresh token từ HTTP-only cookie
-     * - Validate và tạo access token mới
-     * - Tùy chọn: rotate refresh token (tạo mới refresh token)
+     * - Tạo access token mới → set vào cookie
      */
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(
             HttpServletRequest request,
             HttpServletResponse response) {
         try {
-            // Lấy refresh token từ cookie
             String refreshTokenStr = cookieUtil.getRefreshTokenFromCookie(request);
 
             if (refreshTokenStr == null) {
@@ -98,7 +129,6 @@ public class AuthController {
                         .body(Map.of("error", "Refresh token not found"));
             }
 
-            // Tìm và validate refresh token
             Optional<RefreshToken> refreshTokenOpt = refreshTokenService.findByToken(refreshTokenStr);
 
             if (refreshTokenOpt.isEmpty()) {
@@ -110,23 +140,26 @@ public class AuthController {
             RefreshToken refreshToken = refreshTokenOpt.get();
 
             if (!refreshTokenService.validateRefreshToken(refreshToken)) {
-                // Token không hợp lệ hoặc hết hạn, xóa cookie
                 cookieUtil.deleteRefreshTokenCookie(response);
+                cookieUtil.deleteAccessTokenCookie(response);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("error", "Refresh token expired or revoked"));
             }
 
-            // Tạo access token mới
             String username = refreshToken.getUsername();
-            String newAccessToken = tokenProvider.generateToken(username);
 
-            // Token Rotation: Tạo refresh token mới để tăng cường bảo mật
+            // Tạo access token mới → cookie
+            String newAccessToken = tokenProvider.generateToken(username);
+            long accessMaxAge = jwtExpiration / 1000;
+            cookieUtil.createAccessTokenCookie(response, newAccessToken, accessMaxAge);
+
+            // Token rotation: refresh token mới
             RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(username);
-            long maxAgeSeconds = refreshTokenService.getRefreshTokenExpiration() / 1000;
-            cookieUtil.createRefreshTokenCookie(response, newRefreshToken.getToken(), maxAgeSeconds);
+            long refreshMaxAge = refreshTokenService.getRefreshTokenExpiration() / 1000;
+            cookieUtil.createRefreshTokenCookie(response, newRefreshToken.getToken(), refreshMaxAge);
 
             logger.debug("Access token refreshed successfully");
-            return ResponseEntity.ok(new AuthResponse(newAccessToken, "Bearer"));
+            return ResponseEntity.ok(Map.of("message", "Token refreshed"));
 
         } catch (Exception e) {
             logger.error("Error refreshing token", e);
@@ -136,28 +169,21 @@ public class AuthController {
     }
 
     /**
-     * Logout endpoint
-     * - Revoke refresh token trong database
-     * - Xóa refresh token cookie
+     * Logout endpoint – xóa cả hai cookie
      */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
             HttpServletRequest request,
             HttpServletResponse response) {
         try {
-            // Lấy refresh token từ cookie
             String refreshTokenStr = cookieUtil.getRefreshTokenFromCookie(request);
-
             if (refreshTokenStr != null) {
-                // Tìm và revoke refresh token
                 Optional<RefreshToken> refreshTokenOpt = refreshTokenService.findByToken(refreshTokenStr);
                 refreshTokenOpt.ifPresent(refreshTokenService::revokeToken);
             }
 
-            // Xóa cookie
             cookieUtil.deleteRefreshTokenCookie(response);
-
-            // Clear security context
+            cookieUtil.deleteAccessTokenCookie(response);
             SecurityContextHolder.clearContext();
 
             logger.info("User logged out successfully");

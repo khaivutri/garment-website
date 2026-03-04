@@ -44,8 +44,11 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
                         .requestMatchers("/swagger-resources/**").permitAll()
                         .requestMatchers("/webjars/**").permitAll()
-                        // Public: View products (GET only)
+                        // Public: View products and categories (GET only)
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                        // Public: Serve uploaded images
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         // All other requests require authentication
                         .anyRequest().authenticated());
 

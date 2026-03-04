@@ -1,5 +1,6 @@
 package com.example.backend.security;
 
+import com.example.backend.util.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -21,29 +23,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+    @Autowired
+    private CookieUtil cookieUtil;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            // 1. Lấy JWT từ request
-            String jwt = getJwtFromRequest(request);
+            // 1. Ưu tiên đọc JWT từ HTTP-only cookie
+            // Fallback: Authorization: Bearer header (giữ backward compat / Swagger)
+            String jwt = cookieUtil.getAccessTokenFromCookie(request);
+            if (!StringUtils.hasText(jwt)) {
+                jwt = getJwtFromHeader(request);
+            }
 
-            // 2. Kiểm tra Token và xác thực
+            // 2. Kiểm tra token và xác thực
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                // Lấy username từ chuỗi JWT
                 String username = tokenProvider.getUsernameFromJWT(jwt);
-
-                // Lấy thông tin người dùng từ database
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-                if(userDetails != null) {
-                    // Nếu người dùng hợp lệ, set thông tin cho Spring Security
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                if (userDetails != null) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
@@ -54,8 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // Hàm hỗ trợ lấy Token từ Header "Authorization: Bearer ...."
-    private String getJwtFromRequest(HttpServletRequest request) {
+    private String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
