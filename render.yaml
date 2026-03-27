@@ -1,0 +1,41 @@
+services:
+  # --- Backend ---
+  - type: web
+    name: garment-backend
+    runtime: java
+    rootDir: backend
+    buildCommand: ./mvnw clean install -DskipTests
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: COOKIE_SECURE
+        value: true
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: garment-backend
+          property: host
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: garment-frontend
+          property: host
+
+  # --- Frontend ---
+  - type: web
+    name: garment-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: garment-backend
+          property: host
