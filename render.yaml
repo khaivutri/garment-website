@@ -2,10 +2,8 @@ services:
   # --- Backend ---
   - type: web
     name: garment-backend
-    runtime: java
+    runtime: docker 
     rootDir: backend
-    buildCommand: ./mvnw clean install -DskipTests
-    startCommand: java -jar target/*.jar
     envVars:
       - key: SPRING_DATASOURCE_URL
         sync: false
