@@ -117,18 +117,22 @@ export default function HomePage() {
             Bộ Sưu Tập Xuân Hè 2026
           </div>
 
-          <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white
-            leading-none tracking-tight mb-6 animate-fade-in-up">
+          <h1
+              style={{ marginBottom: '40px' }}
+              className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-none tracking-tight animate-fade-in-up"
+          >
             Thời Trang{' '}
             <span className="text-gradient-gold">Thuần Việt</span>
             <br />
             <span className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-medium italic">
-              Đẳng Cấp Quốc Tế
-            </span>
+    Đẳng Cấp Quốc Tế
+  </span>
           </h1>
 
-          <p className="text-white/60 text-lg sm:text-xl max-w-2xl mx-auto mb-10
-            animate-fade-in-up animation-delay-200">
+          <p
+              style={{ marginBottom: '56px', textAlign: 'center', marginLeft: 'auto', marginRight: 'auto' }}
+              className="text-white/60 text-lg sm:text-xl max-w-2xl mx-auto animate-fade-in-up animation-delay-200"
+          >
             Khám phá những thiết kế tinh tế mang đậm bản sắc văn hóa Việt Nam,
             được làm từ chất liệu cao cấp bởi những nghệ nhân tài hoa.
           </p>
@@ -152,8 +156,8 @@ export default function HomePage() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto mt-20
-            animate-fade-in-up animation-delay-400">
+          <div className="flex flex-wrap items-center justify-center gap-12 sm:gap-24 max-w-3xl mx-auto mt-32
+          animate-fade-in-up animation-delay-400">
             {[
               { value: '500+', label: 'Sản phẩm' },
               { value: '10K+', label: 'Khách hàng' },
@@ -177,7 +181,7 @@ export default function HomePage() {
 
       {/* FEATURES BAR */}
       <section className="bg-white border-y border-[#e8e4df]" aria-label="Tính năng">
-        <div className="section-container py-10">
+        <div className="section-container py-20">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex items-center gap-4 group">
@@ -196,7 +200,7 @@ export default function HomePage() {
       </section>
 
       {/* CATEGORIES SECTION */}
-      <section className="py-20 bg-[#fdfaf5]" aria-labelledby="categories-heading">
+      <section style={{ paddingTop: '100px', paddingBottom: '100px' }} className="bg-[#fdfaf5]" aria-labelledby="categories-heading">
         <div className="section-container">
           <div className="text-center mb-12">
             <p className="text-[#c9a84c] text-sm font-semibold tracking-widest uppercase mb-2">
@@ -205,7 +209,10 @@ export default function HomePage() {
             <h2 id="categories-heading" className="font-display text-4xl lg:text-5xl font-bold text-[#1a1a2e]">
               Danh Mục Sản Phẩm
             </h2>
-            <p className="text-[#8a8a9a] mt-3 max-w-xl mx-auto">
+            <p
+                className="text-[#8a8a9a] mt-3 max-w-xl mx-auto"
+                style={{ textAlign: 'center', margin: '12px auto 0' }}
+            >
               Tìm kiếm phong cách của bạn trong bộ sưu tập đa dạng từ trang phục công sở đến casual
             </p>
           </div>
@@ -247,7 +254,7 @@ export default function HomePage() {
       </section>
 
       {/* FEATURED PRODUCTS SECTION */}
-      <section className="py-20 bg-white" aria-labelledby="featured-heading">
+      <section style={{ paddingTop: '100px', paddingBottom: '100px' }} className="bg-white" aria-labelledby="featured-heading">
         <div className="section-container">
           <div className="flex items-end justify-between mb-12">
             <div>
@@ -368,7 +375,12 @@ export default function HomePage() {
                 Mỗi sản phẩm đều được chế tác thủ công bởi các nghệ nhân tài hoa, sử dụng chất liệu
                 được lựa chọn kỹ lưỡng từ các làng nghề truyền thống.
               </p>
-              <Link href="/about" id="story-about-btn" className="btn btn-primary text-[#1a1a2e] !py-3.5">
+              <Link
+                  href="/about"
+                  id="story-about-btn"
+                  className="btn btn-primary text-[#1a1a2e] !py-3.5"
+                  style={{ marginTop: '32px', display: 'inline-flex' }}
+              >
                 Tìm Hiểu Thêm
                 <ArrowRight size={16} />
               </Link>
@@ -398,7 +410,7 @@ export default function HomePage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-20 bg-[#fdfaf5]" aria-labelledby="testimonials-heading">
+      <section style={{ paddingTop: '100px', paddingBottom: '100px' }} className="bg-[#fdfaf5]" aria-labelledby="testimonials-heading">
         <div className="section-container">
           <div className="text-center mb-12">
             <p className="text-[#c9a84c] text-sm font-semibold tracking-widest uppercase mb-2">
@@ -409,13 +421,26 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '24px',
+                justifyContent: 'center',
+                marginTop: '64px' /* Thêm dòng này để đẩy 3 thẻ cách xa tiêu đề */
+              }}
+          >
             {testimonials.map((t, i) => (
-              <div
-                key={t.name}
-                className="card p-7 animate-fade-in-up"
-                style={{ animationDelay: `${i * 150}ms` }}
-              >
+                <div
+                    key={t.name}
+                    className="card p-7 animate-fade-in-up"
+                    style={{
+                      animationDelay: `${i * 150}ms`,
+                      flex: '1 1 30%',
+                      minWidth: '280px'
+                    }}
+                >
                 {/* Stars */}
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: t.rating }).map((_, si) => (
@@ -447,7 +472,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA SECTION */}
-      <section className="py-20 bg-white" aria-label="Call to action">
+      <section style={{ paddingTop: '100px', paddingBottom: '100px' }} className="bg-white" aria-label="Call to action">
         <div className="section-container">
           <div className="rounded-3xl overflow-hidden relative"
             style={{ background: 'var(--gradient-gold)' }}>

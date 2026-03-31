@@ -29,7 +29,7 @@ export default function Footer() {
     return (
         <footer className="bg-[#1a1a2e] text-white/80">
             {/* Newsletter Banner */}
-            <div className="border-b border-white/10">
+            <div style={{ paddingBottom: '60px', marginBottom: '60px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="section-container py-12">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                         <div>

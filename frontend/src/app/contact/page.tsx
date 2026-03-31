@@ -38,39 +38,43 @@ export default function ContactPage() {
 
             <div className="bg-[#fdfaf5] min-h-screen">
                 {/* Header */}
-                <div className="bg-white border-b border-[#e8e4df]">
-                    <div className="section-container py-14 text-center">
+                {/* FIX 1: Thêm paddingTop: 160px để không bị che chữ "Chúng Tôi Luôn Lắng Nghe" */}
+                <div className="bg-white border-b border-[#e8e4df]" style={{ paddingTop: '160px', paddingBottom: '60px' }}>
+                    <div className="section-container text-center">
                         <p className="text-[#c9a84c] text-xs font-semibold tracking-widest uppercase mb-2">Liên Hệ</p>
-                        <h1 className="font-display text-4xl lg:text-5xl font-bold text-[#1a1a2e]">
+                        <h1 className="font-display text-4xl lg:text-5xl font-bold text-[#1a1a2e]" style={{ marginBottom: '16px' }}>
                             Chúng Tôi Luôn Lắng Nghe
                         </h1>
-                        <p className="text-[#8a8a9a] mt-3 max-w-xl mx-auto">
+                        <p className="text-[#8a8a9a] max-w-xl mx-auto">
                             Bạn có câu hỏi, góp ý hay muốn hợp tác? Hãy liên hệ với chúng tôi ngay!
                         </p>
                     </div>
                 </div>
 
-                <div className="section-container py-14">
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+                <div className="section-container" style={{ padding: '80px 20px' }}>
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-10" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+
                         {/* Info */}
-                        <div className="lg:col-span-2 space-y-5">
+                        {/* FIX 2: Ép dùng flex-col và gap-32px để giãn khoảng cách các cục thông tin */}
+                        <div className="lg:col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                             {contactInfo.map(({ icon: Icon, label, value }) => (
-                                <div key={label} className="card p-5 flex items-start gap-4">
-                                    <div className="w-11 h-11 rounded-2xl bg-[#c9a84c]/10 flex items-center justify-center flex-shrink-0">
-                                        <Icon size={20} className="text-[#c9a84c]" />
+                                <div key={label} className="card flex items-start" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', display: 'flex', gap: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                                    <div className="rounded-2xl flex items-center justify-center flex-shrink-0" style={{ width: '48px', height: '48px', backgroundColor: 'rgba(201, 168, 76, 0.1)' }}>
+                                        <Icon size={24} className="text-[#c9a84c]" color="#c9a84c" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-semibold text-[#8a8a9a] uppercase tracking-wide mb-1">{label}</p>
-                                        <p className="font-medium text-[#1a1a2e] text-sm">{value}</p>
+                                        <p className="font-semibold uppercase tracking-wide" style={{ fontSize: '12px', color: '#8a8a9a', marginBottom: '4px' }}>{label}</p>
+                                        <p className="font-medium text-[#1a1a2e]" style={{ fontSize: '15px' }}>{value}</p>
                                     </div>
                                 </div>
                             ))}
 
                             {/* Map placeholder */}
-                            <div className="rounded-2xl overflow-hidden h-52 bg-[#e8e4df] relative">
+                            <div className="rounded-2xl overflow-hidden relative" style={{ height: '280px', borderRadius: '16px', border: '1px solid #e8e4df', marginTop: '16px' }}>
                                 <iframe
-                                    src="https://maps.google.com/maps?q=Ho+Chi+Minh+City&output=embed"
+                                    src="https://maps.google.com/maps?q=123%20Lê%20Lợi,%20Quận%201,%20Hồ%20Chí%20Minh&t=&z=15&ie=UTF8&iwloc=&output=embed"
                                     className="w-full h-full border-0"
+                                    style={{ width: '100%', height: '100%' }}
                                     loading="lazy"
                                     title="Bản đồ VẢI VIỆT"
                                 />
@@ -78,13 +82,14 @@ export default function ContactPage() {
                         </div>
 
                         {/* Form */}
-                        <div className="lg:col-span-3">
-                            <div className="card p-8">
-                                <h2 className="font-display text-2xl font-bold text-[#1a1a2e] mb-6">
+                        {/* FIX 3: Thêm marginTop: 40px để đẩy cục gửi tin nhắn xuống cho thoáng */}
+                        <div className="lg:col-span-3" style={{ marginTop: '40px' }}>
+                            <div className="card" style={{ backgroundColor: 'white', padding: '40px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
+                                <h2 className="font-display font-bold text-[#1a1a2e]" style={{ fontSize: '1.75rem', marginBottom: '32px' }}>
                                     Gửi Tin Nhắn
                                 </h2>
-                                <form id="contact-form" onSubmit={handleSubmit} className="space-y-5" noValidate>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <form id="contact-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }} noValidate>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
                                         <Input
                                             id="contact-name"
                                             label="Họ và Tên *"
@@ -109,29 +114,32 @@ export default function ContactPage() {
                                         onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
                                     />
                                     <div>
-                                        <label htmlFor="contact-message" className="text-sm font-semibold text-[#2d2d2d] block mb-1.5">
+                                        <label htmlFor="contact-message" style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: '#2d2d2d', marginBottom: '8px' }}>
                                             Tin Nhắn *
                                         </label>
                                         <textarea
                                             id="contact-message"
                                             placeholder="Nội dung tin nhắn của bạn..."
-                                            rows={5}
+                                            rows={6}
                                             value={form.message}
                                             onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
                                             className="input-base resize-none"
+                                            style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db', outline: 'none' }}
                                         />
                                     </div>
-                                    <Button
-                                        type="submit"
-                                        variant="primary"
-                                        size="lg"
-                                        isLoading={isSending}
-                                        id="contact-submit-btn"
-                                        className="w-full"
-                                        leftIcon={<Send size={16} />}
-                                    >
-                                        {isSending ? 'Đang Gửi...' : 'Gửi Tin Nhắn'}
-                                    </Button>
+                                    <div style={{ marginTop: '8px' }}>
+                                        <Button
+                                            type="submit"
+                                            variant="primary"
+                                            size="lg"
+                                            isLoading={isSending}
+                                            id="contact-submit-btn"
+                                            style={{ width: '100%', backgroundColor: '#c9a84c', color: '#1a1a2e', padding: '16px', borderRadius: '99px', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', border: 'none', cursor: 'pointer' }}
+                                        >
+                                            <Send size={18} />
+                                            {isSending ? 'Đang Gửi...' : 'Gửi Tin Nhắn'}
+                                        </Button>
+                                    </div>
                                 </form>
                             </div>
                         </div>

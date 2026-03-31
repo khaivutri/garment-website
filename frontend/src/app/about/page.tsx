@@ -22,109 +22,117 @@ const team = [
 
 export default function AboutPage() {
     return (
-        <div>
-            {/* Hero */}
+        <div style={{ fontFamily: 'system-ui, sans-serif', color: '#5a5a6a' }}>
+            {/* Hero Section */}
             <section
-                className="relative py-32 flex items-center overflow-hidden"
-                style={{ background: 'var(--gradient-hero)' }}
+                style={{
+                    position: 'relative',
+                    /* FIX 1: Tăng padding-top lên 200px để tránh bị Header che khuất */
+                    padding: '200px 20px 120px 20px',
+                    background: 'linear-gradient(135deg, #0e1227 0%, #1a1a2e 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    textAlign: 'center'
+                }}
                 aria-label="About hero"
             >
-                <div className="absolute inset-0">
+                <div style={{ position: 'absolute', inset: 0, opacity: 0.1 }}>
                     <img
                         src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80"
                         alt=""
-                        className="w-full h-full object-cover opacity-10"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                 </div>
-                <div className="section-container relative z-10 text-center">
-                    <p className="text-[#c9a84c] text-sm font-semibold tracking-widest uppercase mb-4">Về Chúng Tôi</p>
-                    <h1 className="font-display text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                        Chúng Tôi Là{' '}
-                        <span className="text-gradient-gold">VẢI VIỆT</span>
+                <div style={{ position: 'relative', zIndex: 10, maxWidth: '800px', margin: '0 auto' }}>
+                    <p style={{ color: '#c9a84c', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>
+                        Về Chúng Tôi
+                    </p>
+                    <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 'bold', color: 'white', lineHeight: 1.2, marginBottom: '1.5rem' }}>
+                        Chúng Tôi Là <span style={{ color: '#c9a84c' }}>VẢI VIỆT</span>
                     </h1>
-                    <p className="text-white/60 text-lg max-w-2xl mx-auto">
+                    <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.125rem', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
                         Thương hiệu thời trang Việt Nam ra đời từ tình yêu với văn hóa dân tộc và khát vọng
                         mang vẻ đẹp Việt ra thế giới.
                     </p>
                 </div>
             </section>
 
-            {/* Story */}
-            <section className="py-24 bg-white" id="story" aria-labelledby="story-heading">
-                <div className="section-container">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Story Section */}
+            <section style={{ padding: '120px 20px', backgroundColor: '#ffffff' }} id="story" aria-labelledby="story-heading">
+                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                    {/* FIX 2: Dùng Grid với gap lớn (80px) để tách chữ và ảnh ra cho thoáng */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '80px', alignItems: 'center' }}>
                         <div>
-                            <p className="text-[#c9a84c] text-sm font-semibold tracking-widest uppercase mb-3">Câu Chuyện</p>
-                            <h2 id="story-heading" className="font-display text-4xl font-bold text-[#1a1a2e] mb-6 leading-tight">
+                            <p style={{ color: '#c9a84c', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Câu Chuyện</p>
+                            <h2 id="story-heading" style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#1a1a2e', marginBottom: '1.5rem', lineHeight: 1.2 }}>
                                 Từ Làng Nghề Đến Sàn Diễn Quốc Tế
                             </h2>
-                            <p className="text-[#5a5a6a] leading-relaxed mb-4">
+                            <p style={{ lineHeight: 1.8, marginBottom: '1rem' }}>
                                 VẢI VIỆT được thành lập năm 2018 bởi nhà thiết kế Nguyễn Thị Mai — người có hơn 15 năm
                                 kinh nghiệm trong ngành thời trang quốc tế. Với tầm nhìn là tôn vinh di sản dệt may Việt Nam,
                                 bà đã quy tụ những nghệ nhân tài hoa từ khắp mọi miền đất nước.
                             </p>
-                            <p className="text-[#5a5a6a] leading-relaxed mb-8">
+                            <p style={{ lineHeight: 1.8, marginBottom: '2.5rem' }}>
                                 Ngày nay, VẢI VIỆT có mặt tại hơn 10 thành phố và xuất khẩu sang 5 quốc gia,
                                 mang thời trang thuần Việt đến với người yêu thời trang toàn cầu.
                             </p>
-                            <Link href="/products" id="about-shop-btn" className="btn btn-primary text-[#1a1a2e] !py-3.5">
+                            <Link href="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#c9a84c', color: '#1a1a2e', padding: '14px 28px', borderRadius: '99px', fontWeight: 'bold', textDecoration: 'none' }}>
                                 Khám Phá Bộ Sưu Tập
                                 <ArrowRight size={16} />
                             </Link>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <img src="https://images.unsplash.com/photo-1594938298603-c8148c4b4de2?w=400&q=80" alt="Workshop" className="rounded-2xl object-cover h-56 w-full" />
-                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" alt="Fabric" className="rounded-2xl object-cover h-56 w-full mt-6" />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                            <img src="https://images.unsplash.com/photo-1594938298603-c8148c4b4de2?w=400&q=80" alt="Workshop" style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '300px' }} />
+                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" alt="Fabric" style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '300px', marginTop: '40px' }} />
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Values */}
-            <section className="py-24 bg-[#fdfaf5]" id="values" aria-labelledby="values-heading">
-                <div className="section-container">
-                    <div className="text-center mb-14">
-                        <p className="text-[#c9a84c] text-sm font-semibold tracking-widest uppercase mb-2">Triết Lý</p>
-                        <h2 id="values-heading" className="font-display text-4xl font-bold text-[#1a1a2e]">
+            {/* Values Section */}
+            <section style={{ padding: '120px 20px', backgroundColor: '#fdfaf5' }} id="values" aria-labelledby="values-heading">
+                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                        <p style={{ color: '#c9a84c', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Triết Lý</p>
+                        <h2 id="values-heading" style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#1a1a2e' }}>
                             Giá Trị Cốt Lõi
                         </h2>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {values.map((v, i) => (
-                            <div
-                                key={v.title}
-                                className="card p-7 text-center animate-fade-in-up"
-                                style={{ animationDelay: `${i * 100}ms` }}
-                            >
-                                <div className="w-14 h-14 rounded-2xl bg-[#c9a84c]/10 flex items-center justify-center mx-auto mb-4">
-                                    <v.icon size={26} className="text-[#c9a84c]" />
+                    {/* FIX 3: Tăng gap giữa các khối giá trị để bớt dính vào nhau */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '40px' }}>
+                        {values.map((v) => (
+                            <div key={v.title} style={{ backgroundColor: 'white', padding: '40px 30px', borderRadius: '24px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+                                <div style={{ width: '64px', height: '64px', borderRadius: '16px', backgroundColor: 'rgba(201, 168, 76, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto' }}>
+                                    <v.icon size={32} color="#c9a84c" />
                                 </div>
-                                <h3 className="font-display font-bold text-lg text-[#1a1a2e] mb-2">{v.title}</h3>
-                                <p className="text-[#8a8a9a] text-sm leading-relaxed">{v.desc}</p>
+                                <h3 style={{ fontWeight: 'bold', fontSize: '1.25rem', color: '#1a1a2e', marginBottom: '12px' }}>{v.title}</h3>
+                                <p style={{ color: '#8a8a9a', fontSize: '0.9rem', lineHeight: 1.6 }}>{v.desc}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Team */}
-            <section className="py-24 bg-white" id="team" aria-labelledby="team-heading">
-                <div className="section-container">
-                    <div className="text-center mb-14">
-                        <p className="text-[#c9a84c] text-sm font-semibold tracking-widest uppercase mb-2">Con Người</p>
-                        <h2 id="team-heading" className="font-display text-4xl font-bold text-[#1a1a2e]">
+            {/* Team Section */}
+            <section style={{ padding: '120px 20px', backgroundColor: '#ffffff' }} id="team" aria-labelledby="team-heading">
+                <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                        <p style={{ color: '#c9a84c', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Con Người</p>
+                        <h2 id="team-heading" style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#1a1a2e' }}>
                             Đội Ngũ Sáng Tạo
                         </h2>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
+                    {/* FIX 4: Tách các ảnh nhân sự ra xa nhau */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '60px' }}>
                         {team.map((member) => (
-                            <div key={member.name} className="text-center group">
-                                <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-[#e8e4df]
-                  group-hover:border-[#c9a84c] transition-colors shadow-md">
-                                    <img src={member.img} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <div key={member.name} style={{ textAlign: 'center' }}>
+                                <div style={{ width: '160px', height: '160px', margin: '0 auto 20px auto', borderRadius: '50%', overflow: 'hidden', border: '6px solid #e8e4df' }}>
+                                    <img src={member.img} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
-                                <h3 className="font-display font-bold text-[#1a1a2e]">{member.name}</h3>
-                                <p className="text-[#8a8a9a] text-sm mt-0.5">{member.role}</p>
+                                <h3 style={{ fontWeight: 'bold', fontSize: '1.2rem', color: '#1a1a2e', marginBottom: '4px' }}>{member.name}</h3>
+                                <p style={{ color: '#8a8a9a', fontSize: '0.9rem' }}>{member.role}</p>
                             </div>
                         ))}
                     </div>

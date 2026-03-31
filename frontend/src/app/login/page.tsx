@@ -49,11 +49,25 @@ export default function LoginPage() {
         <>
             <ToastContainer toasts={toasts} dismiss={dismiss} />
 
-            <div className="min-h-screen -mt-[72px] flex">
+            <div
+                className="min-h-screen -mt-[72px] flex"
+                style={{
+                    display: 'flex',
+                    paddingTop: '72px', /* Đẩy toàn bộ nội dung xuống dưới Header */
+                    minHeight: '100vh',
+                    backgroundColor: '#1a1a2e' /* Màu nền tối để tiệp với Footer */
+                }}
+            >
                 {/* Left Panel */}
                 <div
                     className="hidden lg:flex flex-col justify-between w-1/2 p-14 relative overflow-hidden"
-                    style={{ background: 'var(--gradient-hero)' }}
+                    style={{
+                        background: 'var(--gradient-hero)',
+                        padding: '56px', /* Thêm dòng này để đẩy toàn bộ nội dung cách xa mép màn hình */
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between'
+                    }}
                 >
                     {/* BG decoration */}
                     <div className="absolute inset-0 pointer-events-none">
@@ -105,7 +119,18 @@ export default function LoginPage() {
                 </div>
 
                 {/* Right Panel */}
-                <div className="flex-1 flex items-center justify-center p-8 bg-[#fdfaf5]">
+                <div
+                    className="flex-1 flex items-center justify-center p-8 bg-[#fdfaf5]"
+                    style={{
+                        flex: '1',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#fdfaf5',
+                        marginBottom: '40px', /* Thụt mảng trắng lên cách xa Footer 40px */
+                        borderBottomLeftRadius: '32px' /* Bo tròn góc dưới bên trái nhìn cho "nghệ" */
+                    }}
+                >
                     <div className="w-full max-w-md">
                         {/* Mobile Logo */}
                         <div className="lg:hidden flex items-center gap-2.5 mb-10">

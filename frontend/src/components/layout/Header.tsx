@@ -61,7 +61,17 @@ export default function Header() {
                 )}
                 style={{ height: 'var(--header-height)' }}
             >
-                <div className="section-container h-full flex items-center justify-between">
+                <div
+                    className="w-full px-6 md:px-12 lg:px-20 h-full flex items-center justify-between"
+                    style={{
+                        paddingLeft: '5%',
+                        paddingRight: '5%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        width: '100%'
+                    }}
+                >
                     {/* Logo */}
                     <Link href="/" id="header-logo" className="flex items-center gap-2.5 group">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#c9a84c] to-[#e8c97a] flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
@@ -88,7 +98,7 @@ export default function Header() {
                     </Link>
 
                     {/* Desktop Nav */}
-                    <nav className="hidden md:flex items-center gap-1">
+                    <nav className="hidden md:flex items-center gap-8 lg:gap-30">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
@@ -111,7 +121,7 @@ export default function Header() {
                     </nav>
 
                     {/* Desktop Actions */}
-                    <div className="hidden md:flex items-center gap-2">
+                    <div className="hidden md:flex items-center gap-5">
                         <Link
                             href="/products"
                             id="header-search-btn"
@@ -180,7 +190,7 @@ export default function Header() {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-5">
                                 <Link
                                     href="/login"
                                     id="header-login-btn"
